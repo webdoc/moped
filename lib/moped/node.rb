@@ -288,6 +288,18 @@ module Moped
       @primary
     end
 
+    # Is the node passive or an arbiter?
+    #
+    # @example Is the node an arbiter?
+    #   node.passive?
+    #
+    # @return [ true, false ] If the node is an inactive member of the replica set.
+    #
+    # @since 1.0.0
+    def passive?
+      @passive
+    end
+
     # Execute a query on the node.
     #
     # @example Execute a query.
@@ -343,6 +355,7 @@ module Moped
 
       @peers = peers.map { |peer| Node.new(peer) }
       @primary, @secondary = primary, secondary
+      @passive = !primary && !secondary
 
       if !primary && Threaded.executing?(:ensure_primary)
         raise Errors::ReplicaSetReconfigured, "#{inspect} is no longer the primary node."
